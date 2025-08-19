@@ -1,0 +1,33 @@
+1. Storage / GPFS Layout
+
+More LUNs = more I/O concurrency.
+NetApp WAFL likes wide striping, but GPFS also needs multiple NSDs to parallelize writes. 4 LUNs on a 280 TB FS means each NSD is massive (~70 TB each). That limits GPFS to 4 active writer queues.
+👉 Fix: Re-provision into more LUNs (16, 32, even 64 smaller LUNs). NetApp best practice is to keep LUNs < 16 TB for performance, though it can handle bigger — GPFS prefers many smallish ones.
+
+2. GPFS Config Parameters
+
+Check/tune these via mmlsconfig / mmchconfig:
+ignorePrefetchLunCount=yes → don’t cripple prefetch because you only have 4 LUNs.
+nsdMaxWorkerThreads=128 (or higher depending on cores) → improves parallel writes.
+workerThreads → start with 512+ per node if you’ve got enough CPU.
+pagepool → size this generously (tens of GB per node if RAM allows). Large sequential writes will benefit from a bigger cache.
+maxMBpS → set high enough (e.g., 8192 or more) so GPFS doesn’t throttle.
+maxTcpConnsPerNodeConn → bump if you have many NSDs and nodes talking concurrently.
+
+3. Linux Tunables
+
+For large sequential writes, the bottleneck can be the Linux block layer or network stack:
+/etc/sysctl.conf suggestions:
+
+# Increase network buffers
+net.core.rmem_max = 134217728
+net.core.wmem_max = 134217728
+net.ipv4.tcp_rmem = 4096 87380 134217728
+net.ipv4.tcp_wmem = 4096 65536 134217728
+net.ipv4.tcp_window_scaling = 1
+# Increase block device readahead
+blockdev --setra 65536 /dev/mapper/<your_luns>
+
+For FC multipath devices: make sure you’ve tuned queue_depth and enabled ALUA properly.
+Example:
+echo 128 > /sys/block/sdX/device/queue_depth
