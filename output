@@ -1,0 +1,12 @@
+# mmfsadm dump config | grep -i ignorePrefetchLunCount  = 1
+# mmfsadm dump config | grep -i Threads                 = 
+                                      workerthreads       = 256
+                                      worker1threads      = 256
+                                      worker3threads      = 16
+                                      ParralelWorker      = 42
+                                      NsdMinWorkerThread  = 16
+                                      NsdMaxWorkerThread  = 512
+# mmfsadm dump config | grep -i maxMBpS                 = 2048
+# mmfsadm dump config | grep -i pagepool                = 4294967296
+# mmfsadm dump config | grep -i maxTcpConnsPerNodeConn  = 2
+# mmfsadm dump config | grep -i nsdBufSpace             = 30 
