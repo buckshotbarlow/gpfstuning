@@ -45,4 +45,4 @@ mmchconfig maxTcpConnsPerNodeConn=64 -i
 echo "Done. Use 'mmlsconfig' to verify settings."
 # Write the file
 # Make it executable, chmod 755 $SCRIPT
-# Un it, ./gpfs_tune.sh
+# Run it, ./gpfs_tune.sh
