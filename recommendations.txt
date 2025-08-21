@@ -13,6 +13,10 @@ workerThreads → start with 512+ per node if you’ve got enough CPU.
 pagepool → size this generously (tens of GB per node if RAM allows). Large sequential writes will benefit from a bigger cache.
 maxMBpS → set high enough (e.g., 8192 or more) so GPFS doesn’t throttle.
 maxTcpConnsPerNodeConn → bump if you have many NSDs and nodes talking concurrently.
+mmchconfig worker2Threads=1024 handles metadata and small ops.
+mmchconfig worker1Threads=512 handles big I/O paths.
+mmchconfig maxReceiverThreads=1024
+mmchconfig pagepool=64G
 
 3. Linux Tunables
 
